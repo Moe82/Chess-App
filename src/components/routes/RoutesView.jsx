@@ -1,15 +1,12 @@
 import React from 'react'
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { ChessboardContainer } from '../containers'
-
+import { GameSelectContainer } from '../containers'
 export default function RoutesView() {
   return (
-    <Router>
-      <Switch>
-        <Route path="/games/chess">
-          <ChessboardContainer />
-        </Route>
-      </Switch>
-    </Router>
+    <Switch>
+      <Route exact path="/games/chess/:id" component={ChessboardContainer}/>
+      <Route exact path="" component={GameSelectContainer }/>
+    </Switch>
   )
 }

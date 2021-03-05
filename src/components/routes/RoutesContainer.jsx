@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import RoutesView from './RoutesView'
+import { withRouter } from "react-router-dom";
 
-export default class RoutesContainer extends Component {
+class RoutesContainer extends Component {
   render() {
     return (
       <div>
@@ -10,4 +11,4 @@ export default class RoutesContainer extends Component {
     )
   }
 }
-
+export default withRouter(RoutesContainer)
