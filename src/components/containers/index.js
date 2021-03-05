@@ -1,2 +1,2 @@
 export { default as ChessboardContainer } from './ChessboardContainer'
-export { default as GameSelectContainer } from './GameSelectContainer'
+export { default as ChessGameContainer } from './ChessGameContainer'
