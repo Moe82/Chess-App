@@ -1,13 +1,14 @@
-import React, { Component } from 'react'
+import React from 'react'
 import RoutesContainer from './components/routes/RoutesContainer'
-export default class App extends Component {
+import {AppHeaderView} from './components/views'
 
-  render() {
-    return (
-      <div>
-        <RoutesContainer />
-      </div>
-    )
-  }
+function App() {
+  return (
+    <React.Fragment>
+      <AppHeaderView/>
+      <RoutesContainer />
+    </React.Fragment>
+  );
 }
 
+export default App;
