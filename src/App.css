@@ -1,10 +1,58 @@
-.App {
+.aspectwrapper {
+  display: inline-block; 
+  width: 100%;           
+  position: relative;   
+}
+.aspectwrapper::after {
+  padding-top: 56.25%; 
+  display: block;
+  content: '';
+}
+.content {
+  position: absolute;
+  top: 0; bottom: 0; right: 0; left: 0; 
+  outline: thin dashed green;           
+} 
+
+
+.App-logo {
+  margin-top: 1%;
+  height: 12vmin;
+  pointer-events: none;
+}
+
+.App-Name {
+  margin-top: -5%;
+  color: white;
+}
+
+.App-btn {
+  font-size:2rem;
+  margin-bottom: 2%;
+}
+h1 {
+  font-size: 2em !important;
+  color:white;
+  text-align: center;
+  margin-bottom: 1px;
+}
+h2 {
+  font-size: 2em !important;
+  color:white;
+  text-align: center;
+  margin-bottom: 1px;
+}
+
+h3 {
+  font-size: 1em !important;
+  color:white;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+h4 {
+  font-size: 20px !important;
+  color:white;
+  text-align: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -14,18 +62,19 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  text-align: center !important;
+  margin-bottom: 3%;
+  font-size: 30px;
+}
+.App-loading-bar{
+  /* margin-left: 20px; */
+  margin: auto;
+  margin-bottom: -150px;
 }
 
 .App-link {
   color: #61dafb;
+  font-size: 30px;
 }
 
 @keyframes App-logo-spin {
@@ -36,3 +85,4 @@
     transform: rotate(360deg);
   }
 }
+
