@@ -1,12 +1,13 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom';
-import { ChessGameContainer } from '../containers'
+import { ChessGameContainer} from '../containers'
 import { GameSelectView } from '../views'
-export default function RoutesView() {
+
+export default function RoutesView(props) {
   return (
     <Switch>
-      <Route exact path="/games/chess/:id" component={ChessGameContainer}/>
-      <Route exact path="" component={GameSelectView }/>
+      <Route exact path="/:gameId/:color/:isHost" component={ChessGameContainer}/>
+      <Route exact path="/" component={GameSelectView}/>
     </Switch>
   )
 }
