@@ -29,7 +29,17 @@
 .App-btn {
   font-size:2rem;
   margin-bottom: 2%;
+  border: 1px solid #61dafb !important;
+  background-color:#282c34 !important;
+  color:white;
 }
+.App-btn:hover {
+  background-color: #61dafb !important;
+  color: black;
+
+}
+
+
 h1 {
   font-size: 2em !important;
   color:white;
