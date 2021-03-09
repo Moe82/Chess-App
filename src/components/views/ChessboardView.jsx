@@ -7,7 +7,7 @@ function ChessboardView(props) {
   return (
     <div className={'Chessboard'}>
     <Chessboard
-      width={700}
+      width={props.width}
       position={props.position}
       onDrop={(move) => props.handleMove(move)}
       orientation={props.color}
