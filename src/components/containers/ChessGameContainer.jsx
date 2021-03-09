@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { ChessboardView } from '../views'
 import socket from "../../socket/socket";
 import ReactLoading from 'react-loading';
-import { MessageBox } from 'react-chat-elements'
+import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from '@chatscope/chat-ui-kit-react';
+
 import '../../App.css'
 
 const Chess  = require("chess.js")
@@ -16,8 +18,8 @@ export class ChessGameContainer extends Component {
        fen: "start", 
        color: this.props.match.params.color.charAt(0),
        history: [], 
-       width: 400,
-       waitingForOpponent: false, // change back to true al
+       width: 700,
+       waitingForOpponent: true,
        opponentUrl: `http://localhost:3001/${this.props.match.params.gameId}/${this.props.match.params.color == 'white' ? 'black' : "white"}/false`,
        isHost: this.props.match.params.isHost
     }
@@ -91,13 +93,27 @@ export class ChessGameContainer extends Component {
         <ReactLoading className={"App-loading-bar"} type={"bars"} color={"#61dafb"} height={300} width={150} />
         <h4>Waiting for friend to connect...</h4>
       </React.Fragment> :
-      <div style={{"width":"50%", "margin":"0 auto"}}>
-        <ChessboardView 
-          width={this.state.width} 
-          position={this.state.fen}
-          handleMove={this.handleOwnMove}
-          color={this.props.match.params.color}
-        />
+      <div style={{"width":"75%", height:"100%", "margin":"0 auto"}}>
+        <div style={{ float:"left", width:"50%"}}>
+          <ChessboardView
+            width={this.state.width} 
+            position={this.state.fen}
+            handleMove={this.handleOwnMove}
+            color={this.props.match.params.color}
+          />
+        </div>
+        <div style={{ height: "700px", width: "500px", float:"right"}}>
+          <MainContainer>
+            <ChatContainer>       
+              <MessageList>
+                <Message model={{
+                  message: "Hello my friend"
+                  }} />
+                </MessageList>
+              <MessageInput placeholder="Type message here" />        
+            </ChatContainer>
+          </MainContainer>
+        </div>
       </div>
     )}
 }
