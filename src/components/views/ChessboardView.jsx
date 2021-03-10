@@ -3,7 +3,6 @@ import Chessboard from "chessboardjsx";
 import '../../App.css'
 
 function ChessboardView(props) {
-  console.log(props.color)
   return (
     <div className={'Chessboard'}>
     <Chessboard
