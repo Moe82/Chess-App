@@ -26,23 +26,20 @@ export class ChessGameContainer extends Component {
   }
   
   componentDidMount(){
-    console.log("Component mounted")
     this.game = new Chess();
-    if (this.state.isHost == "true") {
-      this.state.socket.emit('createRoom', { gameId: this.props.match.params.gameId }) 
-      this.state.socket.on("opponentConnected", ({}) => {
-        this.setState({waitingForOpponent: false})
+    this.state.socket.emit('joinRoom', { gameId: this.props.match.params.gameId }) 
+    this.state.socket.on("opponentConnected", ({}) => {
+      this.setState({waitingForOpponent: false})
     })
-    } else {
-      this.state.socket.on('connect', () => {
-        this.state.socket.emit('joinRoom', { gameId: this.props.match.params.gameId }) 
-      })
-    }
     this.state.socket.on("opponentMoved", ({ sourceSquare, targetSquare }) => {
       this.handleOpponentMove(sourceSquare, targetSquare)
     })
     this.state.socket.on("opponentSentMsg", (message) => {
       this.setState({ messages: this.state.messages.concat({message: message, direction:"incoming"})})
+    })
+    this.state.socket.on("currentGameState", (fen) => {
+      this.game.load(fen)
+      this.setState({fen:fen})
     })
   }
 
@@ -52,10 +49,7 @@ export class ChessGameContainer extends Component {
       from: sourceSquare,
       to: targetSquare,
       promotion: "q" 
-    });
-    // if the move if illegal, return.
-    if (move === null) return
-    // else, update the state. 
+    }); 
     this.setState(({ history, pieceSquare }) => ({
       fen: this.game.fen(),
       history: this.game.history({ verbose: true }),
@@ -65,35 +59,27 @@ export class ChessGameContainer extends Component {
   handleUserMove = ({sourceSquare, targetSquare}) => {
     // if user tries to move opponents piece, return.
     if (this.game.get(sourceSquare).color != this.state.color) return 
-
     // try to update game object with new move. 
     let move = this.game.move({
       from: sourceSquare,
       to: targetSquare,
       promotion: "q" 
     });
-
     // if the move if illegal, return. 
     if (move === null) return
-
     // else, update the state to reflect new move. 
     this.setState(({ history, pieceSquare }) => ({
       fen: this.game.fen(),
       history: this.game.history({ verbose: true }),
     }));
-
-    this.state.socket.emit('movePiece', { gameId: this.props.match.params.gameId, sourceSquare: sourceSquare, targetSquare:targetSquare })
+    this.state.socket.emit('movePiece', { gameId: this.props.match.params.gameId, sourceSquare: sourceSquare, targetSquare:targetSquare, fen:this.game.fen()})
   };
 
   handleOutgoingMsg = (value) => {
     this.setState({ messages: this.state.messages.concat({message: value, direction:"outgoing"}) })
     this.state.socket.emit('sendMessage', { gameId: this.props.match.params.gameId, message:value})
   }
-
-  componentWillUnmount() {
-    this.state.socket.close();
-  }
-
+  
   render() {
     return (
       this.state.waitingForOpponent && this.state.isHost == "true" ? 
@@ -105,12 +91,7 @@ export class ChessGameContainer extends Component {
       </React.Fragment> :
       <div style={{"width":"75%", height:"100%", "margin":"0 auto"}}>
         <div style={{ float:"left", width:"50%"}}>
-          <ChessboardView
-            width={this.state.width} 
-            position={this.state.fen}
-            handleMove={this.handleUserMove}
-            color={this.props.match.params.color}
-          />
+          <ChessboardView width={this.state.width} position={this.state.fen} handleMove={this.handleUserMove} color={this.props.match.params.color} />
         </div>
         <div style={{ height: "700px", width: "500px", float:"right"}}>
           <MainContainer>
