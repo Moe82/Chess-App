@@ -1,16 +1,15 @@
 import React, { Component } from 'react'
 import { ChessboardView } from '../views'
-import socket from "../../socket/socket";
-import ReactLoading from 'react-loading';
-import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
-import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from '@chatscope/chat-ui-kit-react';
+import socket from "../../socket/socket"
+import ReactLoading from 'react-loading'
+import styles from '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css'
+import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from '@chatscope/chat-ui-kit-react'
 
 import '../../App.css'
 
 const Chess  = require("chess.js")
 
 export class ChessGameContainer extends Component {
-  
   constructor(props) {
     super(props)
     this.state = {
@@ -21,7 +20,8 @@ export class ChessGameContainer extends Component {
        width: 700,
        waitingForOpponent: true,
        opponentUrl: `http://localhost:3001/${this.props.match.params.gameId}/${this.props.match.params.color == 'white' ? 'black' : "white"}/false`,
-       isHost: this.props.match.params.isHost
+       isHost: this.props.match.params.isHost,
+       messages: []
     }
   }
   
@@ -29,19 +29,21 @@ export class ChessGameContainer extends Component {
     this.game = new Chess();
     if (this.state.isHost == "true") {
       this.state.socket.on('connect', () => {
-        this.state.socket.emit('createRoom', { gameId: this.props.match.params.id }) 
+        this.state.socket.emit('createRoom', { gameId: this.props.match.params.gameId }) 
       })
       this.state.socket.on("opponentConnected", ({}) => {
         this.setState({waitingForOpponent: false})
     })
     } else {
       this.state.socket.on('connect', () => {
-        this.state.socket.emit('joinRoom', { gameId: this.props.match.params.id }) 
+        this.state.socket.emit('joinRoom', { gameId: this.props.match.params.gameId }) 
       })
     }
-  
     this.state.socket.on("opponentMoved", ({ sourceSquare, targetSquare }) => {
       this.handleOpponentMove(sourceSquare, targetSquare)
+    })
+    this.state.socket.on("opponentSentMsg", (message) => {
+      this.setState({ messages: this.state.messages.concat({message: message, direction:"incoming"})})
     })
   }
 
@@ -61,7 +63,7 @@ export class ChessGameContainer extends Component {
     }));
   };
 
-  handleOwnMove = ({sourceSquare, targetSquare}) => {
+  handleUserMove = ({sourceSquare, targetSquare}) => {
     // if user tries to move opponents piece, return.
     if (this.game.get(sourceSquare).color != this.state.color) return 
 
@@ -81,8 +83,17 @@ export class ChessGameContainer extends Component {
       history: this.game.history({ verbose: true }),
     }));
 
-    this.state.socket.emit('movePiece', { gameId: this.props.match.params.id, sourceSquare: sourceSquare, targetSquare:targetSquare })
+    this.state.socket.emit('movePiece', { gameId: this.props.match.params.gameId, sourceSquare: sourceSquare, targetSquare:targetSquare })
   };
+
+  handleOutgoingMsg = (value) => {
+    this.setState({ messages: this.state.messages.concat({message: value, direction:"outgoing"}) })
+    this.state.socket.emit('sendMessage', { gameId: this.props.match.params.gameId, message:value})
+  }
+
+  componentWillUnmount() {
+    this.state.socket.close();
+  }
 
   render() {
     return (
@@ -98,24 +109,26 @@ export class ChessGameContainer extends Component {
           <ChessboardView
             width={this.state.width} 
             position={this.state.fen}
-            handleMove={this.handleOwnMove}
+            handleMove={this.handleUserMove}
             color={this.props.match.params.color}
           />
         </div>
         <div style={{ height: "700px", width: "500px", float:"right"}}>
           <MainContainer>
             <ChatContainer>       
-              <MessageList>
-                <Message model={{
-                  message: "Hello my friend"
-                  }} />
-                </MessageList>
-              <MessageInput placeholder="Type message here" />        
+              <MessageList
+                children = {this.state.messages.map((message) => {
+                  return <Message model={message}> </Message>
+                })}
+              />
+              <MessageInput placeholder="Type message here" onSend={this.handleOutgoingMsg}/>        
             </ChatContainer>
           </MainContainer>
         </div>
       </div>
-    )}
+    )
+  }
 }
+
 export default ChessGameContainer
 
