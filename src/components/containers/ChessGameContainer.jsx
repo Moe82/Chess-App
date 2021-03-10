@@ -26,11 +26,10 @@ export class ChessGameContainer extends Component {
   }
   
   componentDidMount(){
+    console.log("Component mounted")
     this.game = new Chess();
     if (this.state.isHost == "true") {
-      this.state.socket.on('connect', () => {
-        this.state.socket.emit('createRoom', { gameId: this.props.match.params.gameId }) 
-      })
+      this.state.socket.emit('createRoom', { gameId: this.props.match.params.gameId }) 
       this.state.socket.on("opponentConnected", ({}) => {
         this.setState({waitingForOpponent: false})
     })
