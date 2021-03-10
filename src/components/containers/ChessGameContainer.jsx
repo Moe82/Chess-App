@@ -21,7 +21,7 @@ export class ChessGameContainer extends Component {
        waitingForOpponent: true,
        opponentUrl: `http://localhost:3001/${this.props.match.params.gameId}/${this.props.match.params.color == 'white' ? 'black' : "white"}/false`,
        isHost: this.props.match.params.isHost,
-       messages: []
+       messages: [],
     }
   }
   
@@ -41,10 +41,15 @@ export class ChessGameContainer extends Component {
       this.game.load(fen)
       this.setState({fen:fen})
     })
+    this.state.socket.on("gameOver", (winner) => {
+      window.alert(`${winner} won!`)
+      this.game = new Chess();
+      this.setState({fen:"start"})
+    })
   }
 
   handleOpponentMove = (sourceSquare, targetSquare) => {
-    // try to update game object with new move. 
+    // update game object with new move. 
     let move = this.game.move({
       from: sourceSquare,
       to: targetSquare,
@@ -54,6 +59,9 @@ export class ChessGameContainer extends Component {
       fen: this.game.fen(),
       history: this.game.history({ verbose: true }),
     }));
+     if (this.game.in_checkmate() == true) {
+       this.state.socket.emit('resetBoard', {gameId: this.props.match.params.gameId, winner: this.props.match.params.color == 'white' ? 'black' : 'white'})
+     }
   };
 
   handleUserMove = ({sourceSquare, targetSquare}) => {
@@ -73,6 +81,7 @@ export class ChessGameContainer extends Component {
       history: this.game.history({ verbose: true }),
     }));
     this.state.socket.emit('movePiece', { gameId: this.props.match.params.gameId, sourceSquare: sourceSquare, targetSquare:targetSquare, fen:this.game.fen()})
+    
   };
 
   handleOutgoingMsg = (value) => {
