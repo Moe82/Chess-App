@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 import Button from 'react-bootstrap/Button';
 
 function GameSelectView(props) {  
-  
+
   const handleFriendBtnClick = () => {
     let colors = ["white","black"];
     let userColor = colors[Math.floor(Math.random()*colors.length)];
@@ -21,7 +21,7 @@ function GameSelectView(props) {
       <Button className="App-btn" variant="primary" onClick={handleFriendBtnClick}> Play a Friend </Button>{' '} <br />
       <Button className="App-btn" variant="primary" size="big" onClick={handleAIBtnClick}> Battle The AI </Button>{' '} 
     </div>
-  )
+  );
 }
 
-export default GameSelectView
+export default GameSelectView;
