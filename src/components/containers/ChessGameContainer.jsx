@@ -8,6 +8,9 @@ import { MainContainer, ChatContainer, MessageList, Message, MessageInput } from
 import '../../App.css'
 
 const Chess  = require("chess.js")
+const DEV_MODE = false;
+const DOMAIN = DEV_MODE ? 'http://localhost:3006' : 'https://reactchessapp.netlify.app';
+
 
 export class ChessGameContainer extends Component {
   constructor(props) {
@@ -19,7 +22,7 @@ export class ChessGameContainer extends Component {
        history: [], 
        width: 700,
        waitingForOpponent: true,
-       opponentUrl: `http://localhost:3001/${this.props.match.params.gameId}/${this.props.match.params.color == 'white' ? 'black' : "white"}/false`,
+       opponentUrl: `${DOMAIN}/${this.props.match.params.gameId}/${this.props.match.params.color == 'white' ? 'black' : "white"}/false`,
        isHost: this.props.match.params.isHost,
        messages: [],
     }
